@@ -9,6 +9,7 @@ CSS tricks.
 */
 
 :root {
+    --color0: #ffffff;
     --color1: #f0f0f0;
     --color2: #003c23;
     --radius: 1rem;
@@ -19,9 +20,28 @@ CSS tricks.
     src: url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@v3.3.0/build/fonts/FiraCodeNerdFont-Regular.woff2");
 }
 
-html, body {
+/* main container */
+html {
     background-color: var(--color1);
     font-family: "Fira Code Nerd Font";
+
+    display: block;
+    width: 80%;
+    margin: 3rem auto;
+
+    border-radius: var(--radius);
+    box-shadow: inset var(--color0) 0 0 10000px;
+}
+
+/* main content */
+body::after {
+    content: "Hello!\a\aThis is simple web page created using only style tag, created for https://tagless.hackclub.com/.";
+
+    display: block;
+    width: 100%;
+
+    text-align: center;
+    white-space: pre-wrap;
 }
 
 /* footer */
