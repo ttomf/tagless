@@ -2,6 +2,8 @@
 
 This is simple web page created without (almost) any HTML tag for [Tagless Hackclub event](https://tagless.hackclub.com/). Only used tag is `<style>`, the whole page is just CSS!
 
+It's optimized for the desktop browser, on phone it might not work.
+
 ## How this works
 
 Browser adds `<html>` and `<body>` tags even if they aren't in the HTML file, so only tag I wrote is the `<style>` tag.
