@@ -30,6 +30,7 @@ html {
     display: block;
     width: 80%;
     margin: 3rem auto;
+    height: 25.5rem; /* needs to be calculated manually from content */
 
     border-radius: var(--radius);
     box-shadow: inset var(--color0) 0 0 10000px;
@@ -51,6 +52,10 @@ head::before {
 \a Unfortunately, ::before and ::after pseudo elements are not selectable, so you can't copy the text.\
 \a You are currently reading head::before!\
 \a This container is just a box-shadow with inset on <html> element.\
+\a The following game uses <body> as main container, and ::before and ::after as labels.\
+\a It uses body:hover to get state and two animations to increase points.\
+\a\a GAME TIME!\
+\a\a Hover over the box only when it's green. Don't destroy it!\
 ";
 
     display: block;
@@ -58,6 +63,164 @@ head::before {
 
     text-align: center;
     white-space: pre-wrap;
+}
+
+/* game */
+@property --can-hover {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 0;
+}
+
+@property --points {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
+}
+
+@property --antipoints {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
+}
+
+@keyframes score {
+    to {
+        --points: 100;
+    }
+}
+
+@keyframes antiscore {
+    to {
+        --antipoints: 100;
+    }
+}
+
+@keyframes game {
+    0% {
+        --can-hover: 0;
+    }
+    50% {
+        --can-hover: 1;
+    }
+    100% {
+        --can-hover: 0;
+    }
+}
+
+@keyframes destroy {
+    to {
+        visibility: hidden;
+    }
+}
+
+body {
+    --scoring: paused;
+    --antiscoring: paused;
+    --hover: 0;
+
+    position: relative;
+    height: 4.5rem;
+
+    background-color: hsl(
+        calc(var(--can-hover) * 120),
+        100%,
+        calc(50% - var(--can-hover) * 10%)
+    );
+
+    border-radius: var(--radius);
+
+    animation:
+        game 2s linear infinite,
+        destroy 1s linear forwards;
+    animation-play-state: running, paused;
+}
+
+body:hover {
+    --hover: 1;
+}
+
+@container style(--hover: 1) and style(--can-hover: 1) {
+    body::before {
+        --scoring: running;
+        --antiscoring: paused;
+    }
+}
+
+@container style(--hover: 1) and style(--can-hover: 0) {
+    body::before {
+        --scoring: paused;
+        --antiscoring: running;
+    }
+}
+
+body::before {
+    content: "Points: " counter(points) " Antipoints: " counter(antipoints);
+
+    color: var(--color0);
+
+    position: absolute;
+    top: 1rem;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* content cannot have <integer> property, so we need to use counter */
+    counter-reset: points var(--points) antipoints var(--antipoints) result
+        calc(
+            round(down, var(--points) / 100, 1) +
+                round(down, var(--antipoints) / 100, 1) * 2
+        );
+    animation:
+        score 3s linear forwards,
+        antiscore 0.5s linear forwards;
+    animation-play-state: var(--scoring), var(--antiscoring);
+}
+
+@keyframes destroy-after {
+    to {
+        content: "I told you!";
+        color: black;
+    }
+}
+
+@counter-style result {
+    system: fixed 0;
+    suffix: "";
+    symbols: "" "YOU WON" "YOU LOST" "Yeah, CSS cannot stop the game...";
+}
+
+body::after {
+    content: counter(result, result);
+
+    font-size: 1.5rem;
+    color: var(--color0);
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    animation: destroy-after 1s step-end forwards;
+    animation-play-state: paused;
+    visibility: visible !important;
+}
+
+body:active::after {
+    content: "Just hover, your mouse button is destroying me!";
+    animation-play-state: running;
+}
+
+body:active {
+    background-color: blue;
+    animation-play-state: running;
 }
 
 /* footer */
