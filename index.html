@@ -53,9 +53,9 @@ head::before {
 \a You are currently reading head::before!\
 \a This container is just a box-shadow with inset on <html> element.\
 \a The following game uses <body> as main container, and ::before and ::after as labels.\
-\a It uses body:hover to get state and two animations to increase points.\
+\a It uses body:hover and body:active to get state and two animations to increase points.\
 \a\a GAME TIME!\
-\a\a Hover over the box only when it's green. Don't destroy it!\
+\a\a Hover over the box only when it's green. Don't destroy it by clicking!\
 ";
 
     display: block;
@@ -114,6 +114,20 @@ head::before {
     }
 }
 
+@keyframes destroy-after {
+    to {
+        content: "I told you!";
+        color: black;
+    }
+}
+
+@counter-style result {
+    system: fixed 0;
+    suffix: "";
+    symbols: "" "YOU WON" "YOU LOST" "Yeah, CSS cannot stop the game...";
+}
+
+/* game panel */
 body {
     --scoring: paused;
     --antiscoring: paused;
@@ -132,7 +146,7 @@ body {
 
     animation:
         game 2s linear infinite,
-        destroy 1s linear forwards;
+        destroy 2s linear forwards;
     animation-play-state: running, paused;
 }
 
@@ -154,6 +168,7 @@ body:hover {
     }
 }
 
+/* small game label */
 body::before {
     content: "Points: " counter(points) " Antipoints: " counter(antipoints);
 
@@ -180,19 +195,7 @@ body::before {
     animation-play-state: var(--scoring), var(--antiscoring);
 }
 
-@keyframes destroy-after {
-    to {
-        content: "I told you!";
-        color: black;
-    }
-}
-
-@counter-style result {
-    system: fixed 0;
-    suffix: "";
-    symbols: "" "YOU WON" "YOU LOST" "Yeah, CSS cannot stop the game...";
-}
-
+/* main game label */
 body::after {
     content: counter(result, result);
 
@@ -208,9 +211,9 @@ body::after {
     justify-content: center;
     align-items: center;
 
-    animation: destroy-after 1s step-end forwards;
+    animation: destroy-after 2s step-end forwards;
     animation-play-state: paused;
-    visibility: visible !important;
+    visibility: visible;
 }
 
 body:active::after {
